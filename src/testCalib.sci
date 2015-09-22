@@ -47,7 +47,7 @@ function [T, B, U] = testCalib(filename)
         y = A;
     endfunction
     
-    // function to calculate frequency matrix
+    // function to compact reduced matrix
     function [y, s] = compact(A)
         [m,n] = size(A);
         resp = [];
