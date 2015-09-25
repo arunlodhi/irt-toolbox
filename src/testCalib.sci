@@ -1,14 +1,27 @@
-function [T, B, U] = testCalib(filename)
-    // Read Response Matrix
-    U = fscanfMat(filename);
+function [U, B, T] = testCalib(resp, tol, filemode)
+    // U => Reduced Response Matrix
+    // B => Difficulty Parameters
+    // T => Ability Parameters
+    
+    
+    if argn(2) == 2 then
+        filemode = 0;
+    end
+    
+    if filemode == 0 then
+        U = resp;
+    elseif filemode == 1 then
+        U = fscanfMat(resp);
+    end
+    
     
     // function for reducing the matrix
-    function [y, t0, b0, T, B] = reduce(A)
+    function [y, tr, br, T, B] = reduce(A)
         
         [M0,N0] = size(A);
         // indexes for storing candidate and question numbers
-        t0 = 1:M0;
-        b0 = 1:N0;
+        tr = 1:M0;
+        br = 1:N0;
         // final matrix to store candidate and question parameters
         T = zeros(M0,1);
         B = zeros(N0,1);
@@ -20,17 +33,17 @@ function [T, B, U] = testCalib(filename)
             // matrix to store exceptional examinees
             del1 = [];
             tmp1 = find(sum(A,2) == 0);
-            T(t0(tmp1)) = -%inf;
+            T(tr(tmp1)) = -%inf;
             tmp2 = find(sum(A,2) == n);
-            T(t0(tmp2)) = %inf;
+            T(tr(tmp2)) = %inf;
             del1 = [tmp1 tmp2];
             
             // matrix to store exceptional questions
             del2 = [];
             tmp3 = find(sum(A,1) == 0);
-            B(b0(tmp3)) = %inf;
+            B(br(tmp3)) = %inf;
             tmp4 = find(sum(A,1) == m);
-            B(b0(tmp4)) = -%inf;
+            B(br(tmp4)) = -%inf;
             del2 = [tmp3 tmp4];
             
             
@@ -38,9 +51,9 @@ function [T, B, U] = testCalib(filename)
             // deleting the corresponding rows & columns
             A(del1,:) = [];
             A(:,del2) = [];
-            
-            t0(del1) = [];
-            b0(del2) = [];
+            // deleing corresponding indices
+            tr(del1) = [];
+            br(del2) = [];
         end
         
         // return reduced dataset
@@ -63,11 +76,6 @@ function [T, B, U] = testCalib(filename)
         s = scores;
     endfunction
     
-    // Rasch Model
-    function y = prob(t, b)
-        y = 1/(1+exp(-(t-b)));
-    endfunction
-    
     // number of examinees at a raw score r
     function y = num(r, A)
         f = find(sum(A,2) == r);
@@ -81,7 +89,7 @@ function [T, B, U] = testCalib(filename)
             sum1 = 0;
             sum2 = 0;
             for i = 1:Nr
-                p = prob(t(r), b(i));
+                p = prob(b(i), t(r));
                 sum1 = sum1 + p;
                 sum2 = sum2 + p*(1-p);
             end
@@ -97,7 +105,7 @@ function [T, B, U] = testCalib(filename)
             sum1 = 0;
             sum2 = 0;
             for r = 1:Nr-1
-                p = prob(t(r), b(i));
+                p = prob(b(i), t(r));
                 sum1 = sum1 + num(r, Ur)*p;
                 sum2 = sum2 + num(r, Ur)*p*(1-p);
             end
@@ -137,11 +145,11 @@ function [T, B, U] = testCalib(filename)
     
     b = b - mean(b);
     
-    err = 1;
+    err = 2*tol;
     itr = 0;
     
     // run till convergence
-    while err > 0.01
+    while err > tol
         itr = itr + 1;
         b1 = b;
         
@@ -187,5 +195,7 @@ function [T, B, U] = testCalib(filename)
     
     //disp(T, "Examinee Ability:");
     //disp(B, "Item Difficulty:");
+    //fprintfMat('T.tsv',T);
+    //fprintfMat('B.tsv',B);
 
 endfunction
