@@ -163,11 +163,12 @@ function [U, B, T] = testCalib(resp, tol, filemode)
         t = t_iterate(t, b);
         
         err = sum(abs(b1-b));
+//        err = sum(abs((b1-b)./b));
     end
     
     b = b.*((Nr-1)/Nr);
     
-    disp(itr, "Iterations: ");
+//    disp(itr, "Iterations: ");
     
     t = t_iterate(t,b);
     t = t.*((Nr-2)/(Nr-1));

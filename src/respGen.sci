@@ -1,8 +1,10 @@
 function [U,b,t] = respGen(x,y,opmode)
 
 if opmode == 'dimen' then
-    b_max = input("Max value of difficulty: ");
-    t_max = input("Max value of ability: ");
+    //b_max = input("Max value of difficulty: ");
+    //t_max = input("Max value of ability: ");
+    b_max = 3;
+    t_max = 3;
     M = x;
     N = y;
     t = 2*t_max*rand(M,1)-t_max;
