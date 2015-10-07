@@ -1,15 +1,15 @@
 clear
 exec('loadAll.sce', -1);
 
-tmax = 1.5
-tmin = -1.5
+tmax = 1.5;
+tmin = -1.5;
 itr= 50;
-N = 20
+N = 20;
 
 M_i = 10;
-M_f = 1000;
+M_f = 5000;
 
-dn = 10;
+dn = 50;
 M_f = M_f - modulo((M_f-M_i),dn);
 //NMs = (M_f-M_i)/dn;
 //M_f = M_i+dn*(NMs-1);
