@@ -3,11 +3,11 @@ exec('loadAll.sce', -1);
 
 tmax = 1.5
 tmin = -1.5
-itr= 10;
+itr= 50;
 N = 20
 
 M_i = 10;
-M_f = 50;
+M_f = 1000;
 
 dn = 10;
 M_f = M_f - modulo((M_f-M_i),dn);
@@ -26,7 +26,7 @@ for j = 1:N
     b_gen(j) = pool(int(19.5*rand())+1);
 end
 
-N=3;
+N=5;
 b_gen = [-1; 0.2; 0.5; -0.3; 1];
 
 
@@ -50,7 +50,7 @@ for p=1:itr
         disp(M,'No. of Examinees:',p,'Iteration:');
     end
     eb_all = [eb_all eb];
-    p = p+1;
+    //p = p+1;
 end
 
 ebmean = mean(eb_all,2);
@@ -58,6 +58,8 @@ eberr = stdev(eb_all,2)/sqrt(itr);
 disp([Ms' ebmean]);
 clf;
 
-errbar(Ms', ebmean, -eberr, eberr)
+plot(Ms',ebmean,'bo');
+xlabel('No. of Examinees');
+ylabel('Relative Error in Difficulty')
+errbar(Ms', ebmean, eberr, eberr);
 
-//plot(Ms',mean(eb_all,2),'bo');
