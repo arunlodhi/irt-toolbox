@@ -1,65 +1,54 @@
 clear
-exec('loadAll.sce', -1);
+getd('functions');
 
-tmax = 1.5;
-tmin = -1.5;
+t_max = 3;
+t_min = -3;
 itr= 50;
-N = 20;
+N = 10;
+tol = 0.05;
 
 M_i = 10;
 M_f = 5000;
-
 dn = 50;
-M_f = M_f - modulo((M_f-M_i),dn);
-//NMs = (M_f-M_i)/dn;
-//M_f = M_i+dn*(NMs-1);
 
-// NMs =  int((M_f-M_i)/dn) + 1
-// Ms = linspace(M_i,M_f,NMs);
+M_f = M_f - modulo((M_f-M_i),dn);
 Ms = M_i:dn:M_f;
 NMs = size(Ms,2);
 
-
-b_gen = zeros(N,1);
-pool = linspace(-2.4,2.35,20);
-for j = 1:N
-    b_gen(j) = pool(int(19.5*rand())+1);
-end
+//b_gen = zeros(N,1);
+//pool = linspace(-2.4,2.35,N);
+//for j = 1:N
+//    b_gen(j) = pool(int((N-0.5)*rand())+1);
+//end
 
 N=5;
-b_gen = [-1; 0.2; 0.5; -0.3; 1];
+b_gen = [-3; 1.2; 0.3; -1.2; 3];
+//b_gen = [-1; 0.2; 0.5; -0.3; 1];
 
-
-// B_gen = zeros(N, NMs);
-// B_out = B_gen;
-eb = zeros(NMs, 1);
+eb = zeros(1, itr);
 eb_all=[];
 
-for p=1:itr
-    i = 0;
-    for M = M_i:dn:M_f
-        i = i+1;
-        t_gen = (tmax-tmin)*rand(M,1)-(tmax-tmin)/2;
-        [U,b,t] = respGen(b_gen,t_gen,'given');
-        //[U,b_gen,t_gen] = respGen(M,N,'dimen');
-        [A,b_out,t_out] = testCalib(U, 0.05);
-        eb(i) = rms((b_out-b_gen)./b_gen);
-        //B_gen(:,i) = b_gen;
-        //B_out(:,i) = b_out;
+
+i = 0;
+for M = M_i:dn:M_f
+    i = i+1;
+    for p=1:itr
         clc
-        disp(M,'No. of Examinees:',p,'Iteration:');
+        disp(p,'Iteration:', M, 'No. of Examinees:');
+        t_gen = (t_max-t_min)*rand(M,1)+t_min;
+        [U,b,t] = respGen(b_gen,t_gen,0);
+        // testcalib(response, [tol file strict display])
+        [A,b_out,t_out] = testCalib(U, tol, [0 1 0]);
+        eb(p) = rms((b_out-b_gen)./b_gen);
     end
-    eb_all = [eb_all eb];
-    //p = p+1;
+    eb_all = [eb_all;eb];
 end
 
 ebmean = mean(eb_all,2);
 eberr = stdev(eb_all,2)/sqrt(itr);
-disp([Ms' ebmean]);
+//disp([Ms' ebmean], "Ms   ebmean");
 clf;
-
 plot(Ms',ebmean,'bo');
 xlabel('No. of Examinees');
 ylabel('Relative Error in Difficulty')
 errbar(Ms', ebmean, eberr, eberr);
-
