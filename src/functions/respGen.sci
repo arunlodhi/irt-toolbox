@@ -5,8 +5,8 @@ function [U,b,t] = respGen(x,y,options)
     if bt_gen == 0 then
         b = x;
         t = y;
-        M = size(t,1);
-        N = size(b,1);
+        M = length(t);
+        N = length(b);
     elseif bt_gen == 1 then
         //b_max = input("Max value of difficulty: ");
         //t_max = input("Max value of ability: ");

@@ -56,11 +56,11 @@ function [Ur, B, T] = testCalib(resp, tol, options)
             b1 = b;
             
             //difficulty parameter iteration
-            b = b_iterate(t, b, Ur);
+            b = b_iterate(b, t, Ur);
             //centering on 0
             b = b - mean(b);
             //ability parameter iteration
-            t = t_iterate(t, b);
+            t = t_iterate(b, t);
             
             err = sum(abs(b-b1));
             //err = sum(abs((b-b1)./b1));
@@ -72,7 +72,7 @@ function [Ur, B, T] = testCalib(resp, tol, options)
         
         // final scaling and iteration
         b = b.*((Nr-1)/Nr);
-        t = t_iterate(t,b);
+        t = t_iterate(b,t);
         t = t.*((Nr-2)/(Nr-1));
         
         // populate ability matrix

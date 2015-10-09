@@ -4,8 +4,9 @@ getd('functions');
 t_max = 3;
 t_min = -3;
 itr= 50;
-N = 10;
+N = 20;
 tol = 0.05;
+strict = 1;
 
 M_i = 10;
 M_f = 5000;
@@ -15,19 +16,16 @@ M_f = M_f - modulo((M_f-M_i),dn);
 Ms = M_i:dn:M_f;
 NMs = size(Ms,2);
 
-//b_gen = zeros(N,1);
-//pool = linspace(-2.4,2.35,N);
-//for j = 1:N
-//    b_gen(j) = pool(int((N-0.5)*rand())+1);
-//end
+pool = linspace(-2.4,2.35,N)';
+b_gen = pool(int((N-0.5)*rand(N,1))+1);
 
-N=5;
-b_gen = [-3; 1.2; 0.3; -1.2; 3];
+//N=5;
+//b_gen = [-3; 1.2; 0.3; -1.2; 3];
 //b_gen = [-1; 0.2; 0.5; -0.3; 1];
 
+//et = zeros(NMs, 1);
 eb = zeros(1, itr);
 eb_all=[];
-
 
 i = 0;
 for M = M_i:dn:M_f
@@ -38,7 +36,7 @@ for M = M_i:dn:M_f
         t_gen = (t_max-t_min)*rand(M,1)+t_min;
         [U,b,t] = respGen(b_gen,t_gen,0);
         // testcalib(response, [tol file strict display])
-        [A,b_out,t_out] = testCalib(U, tol, [0 1 0]);
+        [A,b_out,t_out] = testCalib(U, tol, [0 strict 0]);
         eb(p) = rms((b_out-b_gen)./b_gen);
     end
     eb_all = [eb_all;eb];

@@ -1,14 +1,14 @@
-function y = b_iterate(t, b, Ur)
-    Nr = size(b,1);
-
+function y = b_iterate(b, t, Ur)
+    Nr = length(b);
+    S = (sum(Ur,1));
+    
+    r = 1:Nr-1;
     p = prob(b,t);
-    n = num(1:Nr-1,Ur);
-    S = sum(Ur,1);
-
-    sum1 = sum(p*n)
-    sum2 = sum( (p .* sqrt(1-p)) * n)
-
-    b = b - (S-sum1) ./ sum2
+    n = num(r,Ur);
+    sum1 = (sum((n*p),1));
+    sum2 = (sum((n*(p.*(1-p))),1));
+    
+    y = b - ((S-sum1)./sum2)';
 
 //    for i = 1:Nr
 //        sum1 = 0;
@@ -21,6 +21,6 @@ function y = b_iterate(t, b, Ur)
 //        end
 //        b(i) = b(i) - ((S(i)-sum1)/sum2);
 //    end
+//    y = b;
 
-    y = b;
 endfunction

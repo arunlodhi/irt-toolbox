@@ -1,5 +1,10 @@
-// number of examinees at a raw score r
+// number of examinees with raw scores r
 function y = num(r, A)
-    f = find(sum(A,2) == r);
-    y = size(f,2);
+    len = length(r);
+    f = r*0;
+    S = sum(A,2);
+    for i = 1:len
+        f(i) = length(find(S == r(i)));
+    end
+    y = f;
 endfunction
